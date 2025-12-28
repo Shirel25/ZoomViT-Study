@@ -1,4 +1,4 @@
-# Résumé de l’article — ZoomViT
+# Résumé de l’article : ZoomViT
 
 Ce document présente une lecture approfondie et une compréhension progressive de l’article
 *Vision Transformers Need Zoomer: Efficient ViT with Visual Intent-Guided Zoom Adapter*.
