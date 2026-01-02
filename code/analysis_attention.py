@@ -58,7 +58,7 @@ importance_maps = compute_importance_map(tokens, grid_size=4)
 # --------------------------------------------------
 # Plot result
 # --------------------------------------------------
-num_images = 50
+num_images = 5
 classes = [
     "airplane","automobile","bird","cat","deer",
     "dog","frog","horse","ship","truck"
