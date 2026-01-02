@@ -5,7 +5,7 @@ from torchvision import datasets, transforms
 def get_flowers_dataloaders(
     data_dir: str = "./data",
     batch_size: int = 32,
-    num_workers: int = 2,
+    num_workers: int = 0,
     image_size: int = 224
 ):
     """

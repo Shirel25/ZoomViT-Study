@@ -72,12 +72,12 @@ for epoch in range(num_epochs):
 # Save trained model
 # --------------------------------------------------
 # Create directory if it does not exist
-os.makedirs("experiments/cifar/vit_baseline", exist_ok=True)
+os.makedirs("../experiments/cifar/vit_baseline", exist_ok=True)
 
 # Save model weights
 torch.save(
     model.state_dict(),
-    "experiments/cifar/vit_baseline/model.pth"
+    "../experiments/cifar/vit_baseline/model.pth"
 )
 
 print("Model saved to experiments/cifar/vit_baseline/model.pth")
