@@ -13,3 +13,6 @@ __pycache__/
 # Trained models / checkpoints
 *.pth
 *.pt
+
+# Ignore unused visualization images
+experiments/flowers/vit_baseline/visualizations/autres/
