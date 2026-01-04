@@ -33,10 +33,11 @@ def compute_importance_map(tokens, grid_size):
 
     return importance_maps
 
-
+# --- For Cifar --- 
 # --------------------------------------------------
 # Plot image with importance map overlay
 # --------------------------------------------------
+
 # def plot_importance_map(image, importance_map):
 #     """Plot original image, importance map, and overlay """
 #     # --------------------------------------------------
@@ -94,6 +95,9 @@ def compute_importance_map(tokens, grid_size):
 #     plt.tight_layout()
 #     plt.show()
 
+# --------------------------------------------------
+# Plot image with importance map overlay
+# --------------------------------------------------
 def plot_importance_map(image, importance_map, alpha=0.4):
     """
     Plot original image, importance map, and transparent overlay.
@@ -153,3 +157,60 @@ def plot_importance_map(image, importance_map, alpha=0.4):
 
     plt.tight_layout()
     plt.show()
+
+
+# --------------------------------------------------
+# Build zoom mask from importance map
+# --------------------------------------------------
+def build_zoom_mask(importance_map, keep_ratio=0.3, image_size=224):
+    """
+    Build a binary zoom mask from a patch-level importance map.
+    Args:
+        importance_map (Tensor): shape (G, G), e.g. 14x14
+        keep_ratio (float): fraction of patches to keep (e.g. 0.3)
+        image_size (int): target image size (e.g. 224)
+    Returns:
+        mask_up (Tensor): shape (image_size, image_size), values in {0,1}
+        1 -> keep, 0 -> discard
+    """
+    G = importance_map.shape[0]
+
+    # Flatten importance values
+    flat = importance_map.flatten()
+
+    # Compute threshold (top-k)
+    k = int(keep_ratio * flat.numel())
+    threshold = torch.topk(flat, k).values.min()
+
+    # Binary mask at patch level
+    mask = (importance_map >= threshold).float()  # (G, G)
+
+    # Upsample to image resolution
+    mask = mask.unsqueeze(0).unsqueeze(0)  # (1,1,G,G)
+    mask_up = F.interpolate(
+        mask,
+        size=(image_size, image_size),
+        mode="nearest"
+    )
+
+    return mask_up.squeeze()  # (H, W)
+
+
+# --------------------------------------------------
+# Apply zoom effect using binary mask
+# --------------------------------------------------
+def apply_image_zoom(image, mask, background_factor=0.3):
+    """
+    Apply a zoom effect on an image using a binary mask.
+    Args:
+        image (Tensor): shape (3, H, W)
+        mask (Tensor): shape (H, W), values in {0,1}
+        background_factor (float): attenuation factor for non-important regions
+    """
+    # Ensure mask has same number of channels
+    mask = mask.unsqueeze(0)  # (1, H, W)
+
+    # Zoomed image: keep important regions, attenuate background
+    zoomed_image = image * mask + image * (1 - mask) * background_factor
+
+    return zoomed_image # shape (3, H, W)
