@@ -214,3 +214,66 @@ def apply_image_zoom(image, mask, background_factor=0.3):
     zoomed_image = image * mask + image * (1 - mask) * background_factor
 
     return zoomed_image # shape (3, H, W)
+
+
+def apply_image_crop_zoom(
+    image,
+    importance_map,
+    keep_ratio=0.15,
+    patch_size=16,
+    min_crop_size=64
+):
+    """
+    True spatial zoom based on importance map.
+    image: Tensor (3, H, W)
+    importance_map: Tensor (G, G)
+    """
+
+    C, H, W = image.shape
+    G = importance_map.shape[0]
+
+    # 1. Flatten importance
+    scores = importance_map.flatten()
+    k = max(1, int(len(scores) * keep_ratio))
+
+    threshold = torch.topk(scores, k).values.min()
+    mask = importance_map >= threshold  # (G, G)
+
+    # 2. Bounding box in patch space
+    ys, xs = torch.where(mask)
+
+    y_min, y_max = ys.min(), ys.max()
+    x_min, x_max = xs.min(), xs.max()
+
+    # 3. Convert to pixel coordinates
+    top = y_min * patch_size
+    left = x_min * patch_size
+    bottom = (y_max + 1) * patch_size
+    right = (x_max + 1) * patch_size
+
+    # 4. Enforce minimum crop size (important!)
+    crop_h = bottom - top
+    crop_w = right - left
+
+    if crop_h < min_crop_size:
+        pad = (min_crop_size - crop_h) // 2
+        top = max(0, top - pad)
+        bottom = min(H, bottom + pad)
+
+    if crop_w < min_crop_size:
+        pad = (min_crop_size - crop_w) // 2
+        left = max(0, left - pad)
+        right = min(W, right + pad)
+
+    # 5. Crop
+    cropped = image[:, top:bottom, left:right]
+
+    # 6. Resize back to original size
+    zoomed = F.interpolate(
+        cropped.unsqueeze(0),
+        size=(H, W),
+        mode="bilinear",
+        align_corners=False
+    ).squeeze(0)
+
+    return zoomed

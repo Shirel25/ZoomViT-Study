@@ -62,8 +62,9 @@ for i, idx in enumerate(indices):
     # Build zoom mask and apply zoom
     # --------------------------------
     mask = build_zoom_mask(importance_map, keep_ratio=0.3)
-    zoomed_image = apply_image_zoom(image[0], mask)
-
+    # zoomed_image = apply_image_zoom(image[0], mask)
+    zoomed_image = apply_image_crop_zoom(image[0], importance_map, keep_ratio=0.3, patch_size=16)
+    
     # ----------------
     # Visualization
     # ----------------
