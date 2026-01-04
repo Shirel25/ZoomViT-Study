@@ -15,4 +15,4 @@ __pycache__/
 *.pt
 
 # Ignore unused visualization images
-experiments/flowers/vit_baseline/visualizations/autres/
+experiments/flowers/vit_baseline/1_visualizations/autres/
