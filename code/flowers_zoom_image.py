@@ -49,7 +49,8 @@ indices = random.sample(range(len(dataset)), NUM_IMAGES)
 for i, idx in enumerate(indices):
     image, _ = dataset[idx]
     image = image.unsqueeze(0).to(device)
-
+    print(f"Processing image {i+1}/{NUM_IMAGES} (index {idx})")
+    
     # ------------------------------
     # Forward pass + importance map
     # ------------------------------
@@ -64,7 +65,7 @@ for i, idx in enumerate(indices):
     mask = build_zoom_mask(importance_map, keep_ratio=0.3)
     # zoomed_image = apply_image_zoom(image[0], mask)
     zoomed_image = apply_image_crop_zoom(image[0], importance_map, keep_ratio=0.3, patch_size=16)
-    
+
     # ----------------
     # Visualization
     # ----------------

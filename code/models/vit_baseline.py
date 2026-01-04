@@ -53,6 +53,62 @@ class ViTBaseline(nn.Module):
 
         return logits, self.last_attention
 
+    def forward_with_pruning(self, x, keep_ratio=0.3, prune_layer=6):
+        """
+        Forward pass with token pruning applied mid-way through the Transformer.
+        Args:
+            x (Tensor): input image (B, 3, H, W)
+            keep_ratio (float): fraction of patch tokens to keep
+            prune_layer (int): index of transformer block where pruning is applied
+        """
+        # --------------------------------------------------
+        # Patch embedding + positional embedding
+        # --------------------------------------------------
+        x = self.model.patch_embed(x)
+        cls_token = self.model.cls_token.expand(x.shape[0], -1, -1)
+        x = torch.cat((cls_token, x), dim=1)
+        x = x + self.model.pos_embed
+        x = self.model.pos_drop(x)
+
+        # --------------------------------------------------
+        # First part of Transformer
+        # --------------------------------------------------
+        for i in range(prune_layer):
+            x = self.model.blocks[i](x)
+
+        # --------------------------------------------------
+        # TOKEN PRUNING
+        # --------------------------------------------------
+        cls_token = x[:, :1, :]       # (B, 1, D)
+        patch_tokens = x[:, 1:, :]    # (B, N, D)
+
+        importance = torch.norm(patch_tokens, dim=-1)  # (B, N)
+
+        N = patch_tokens.shape[1]
+        k = max(1, int(N * keep_ratio))
+
+        idx = torch.topk(importance, k=k, dim=1).indices
+        idx = idx.unsqueeze(-1).expand(-1, -1, patch_tokens.size(-1))
+
+        pruned_patches = torch.gather(patch_tokens, dim=1, index=idx)
+        x = torch.cat([cls_token, pruned_patches], dim=1)
+
+        # --------------------------------------------------
+        # Remaining Transformer blocks
+        # --------------------------------------------------
+        for i in range(prune_layer, len(self.model.blocks)):
+            x = self.model.blocks[i](x)
+
+        # --------------------------------------------------
+        # Classification head
+        # --------------------------------------------------
+        x = self.model.norm(x)
+        cls_token_final = x[:, 0]
+        logits = self.model.head(cls_token_final)
+
+        return logits
+
+
     def _save_attention(self, module, input, output):
         """
         Hook function to save attention weights.

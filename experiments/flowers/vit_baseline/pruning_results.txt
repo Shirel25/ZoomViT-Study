@@ -1,0 +1,26 @@
+Token-level pruning results (keep_ratio = 0.3)
+------------------------------------------------
+
+Image type: good
+Prediction BEFORE pruning (class): 84
+Confidence BEFORE pruning: 0.0329
+
+Prediction AFTER pruning (class):  71
+Confidence AFTER pruning:  0.0346
+
+
+Image type: inverted
+Prediction BEFORE pruning (class): 23
+Confidence BEFORE pruning: 0.0319
+
+Prediction AFTER pruning (class):  25
+Confidence AFTER pruning:  0.0310
+
+
+Image type: diffuse
+Prediction BEFORE pruning (class): 6
+Confidence BEFORE pruning: 0.0553
+
+Prediction AFTER pruning (class):  6
+Confidence AFTER pruning:  0.0519
+
