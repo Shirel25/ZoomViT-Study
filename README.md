@@ -156,6 +156,8 @@ These results empirically confirm that **pruning is beneficial only when visual 
 ├── .gitignore
 └── README.md
 
+```
+
 ---
 
 ## 6. Conclusion
