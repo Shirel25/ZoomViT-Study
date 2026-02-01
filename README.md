@@ -146,6 +146,7 @@ These results empirically confirm that **pruning is beneficial only when visual 
 │           │   ├── 2_inverted_attention/
 │           │   └── 3_diffuse_attention/
 │           │
+│           ├── pruning_confidence_plot.png
 │           ├── pruning_results.txt
 │           └── results.txt
 │
