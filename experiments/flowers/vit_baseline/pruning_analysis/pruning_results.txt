@@ -1,0 +1,3 @@
+Keep Ratio: 0.1 | Accuracy: 0.0836 | Confidence: 0.0407 | Tokens: 19.0
+Keep Ratio: 0.3 | Accuracy: 0.0893 | Confidence: 0.0409 | Tokens: 58.0
+Keep Ratio: 0.5 | Accuracy: 0.0929 | Confidence: 0.0409 | Tokens: 98.0
