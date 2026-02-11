@@ -86,6 +86,8 @@ This is not simple token removal: it forces a **dynamic reorganization of attent
 
 The experiments reveal three behaviors described in the original paper:
 
+### Qualitative Behavior Analysis
+
 - **Good Alignment**  
   When the model correctly identifies the subject, pruning background tokens often *increases confidence* by removing **negative tokens**.
 
@@ -96,6 +98,24 @@ The experiments reveal three behaviors described in the original paper:
   When the model is uncertain, importance maps are scattered. In this case, pruning slightly reduces confidence due to loss of contextual cues.
 
 These results empirically confirm that **pruning is beneficial only when visual intent is correctly aligned**.
+
+### Quantitative Token Retention Analysis
+
+To evaluate structural robustness, we conducted a **post-hoc token pruning study** using multiple retention ratios:
+
+- **0.1** (aggressive pruning)
+- **0.3** (moderate pruning)
+- **0.5** (light pruning)
+
+#### Observations
+
+- Classification accuracy **decreases** as the retention ratio decreases.
+- Aggressive pruning significantly degrades performance.
+- Prediction confidence remains relatively stable despite information loss.
+
+This quantitative analysis demonstrates that post-hoc pruning reveals the **structural sensitivity** of Vision Transformers to token sparsification, reinforcing the need for **intent-guided adaptive mechanisms** such as ZoomViT.
+
+The corresponding accuracy and token-retention curves are available in the `5_pruning_analysis` directory.
 
 ---
 
@@ -146,12 +166,21 @@ These results empirically confirm that **pruning is beneficial only when visual 
 │           │   ├── 2_inverted_attention/
 │           │   └── 3_diffuse_attention/
 │           │
-│           ├── pruning_confidence_plot.png
-│           ├── pruning_results.txt
+│           ├── 4_token_pruning/
+│           │   ├── pruning_confidence_plot.png
+│           │   ├── pruning_results.txt
+│           │
+│           ├── 5_pruning_analysis/
+│           │   ├── accuracy_vs_ratio.png
+│           │   ├── confidence_vs_ratio.png
+│           │   ├── tokens_vs_ratio.png
+│           │   ├── pruning_results.txt
+│           │
 │           └── results.txt
 │
 ├── docs/
 │   └── 01_paper_summary.md
+│   └── 02_poster.png
 │
 ├── Paper_6623_Vision_Transformers_Need.pdf
 ├── .gitignore
@@ -162,6 +191,16 @@ These results empirically confirm that **pruning is beneficial only when visual 
 ---
 
 ## 6. Conclusion
+
 This project bridges the gap between research theory and practical implementation.
 
-By simplifying the ZoomViT adapter while preserving its core principles, we demonstrate that selective attention is not merely an efficiency tool, but a robustness mechanism that helps Vision Transformers filter out misleading information in complex visual scenes.
+By simplifying the ZoomViT adapter while preserving its core principles, we empirically demonstrate that selective attention is not merely an efficiency mechanism, but a structural robustness factor in Vision Transformers.
+
+Through qualitative intent analysis (Good, Inverted, Diffuse attention) and quantitative multi-ratio pruning experiments, we show that:
+
+- Pruning improves predictions only when visual intent is correctly aligned.
+- Misaligned attention amplifies errors under token sparsification.
+- Post-hoc pruning exposes the structural sensitivity of ViT models to information loss.
+
+These findings support the central hypothesis of ZoomViT:  
+**efficient and reliable Vision Transformers require explicit visual-intent guidance.**
