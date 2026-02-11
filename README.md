@@ -1,4 +1,4 @@
-# ZoomViT – Intent-Guided Adaptive Processing for Vision Transformers
+# ZoomViT : Intent-Guided Adaptive Processing for Vision Transformers
 
 This repository contains a **study and implementation** of the concepts introduced in the paper:
 
@@ -55,10 +55,7 @@ This baseline serves as the anchor point for all subsequent comparisons.
 
 Instead of reproducing the full Zoomer distillation framework, this project uses **attention-based hooks** as a proxy for visual intent.
 
-By aggregating:
-- attention weights,
-- gradients,
-- and relevance across layers,
+By extracting and aggregating attention weights across Transformer layers using forward hooks, we generate **Importance Maps** that highlight **class-decisive regions** responsible for the model’s predictions.
 
 we generate **Importance Maps** that highlight **class-decisive regions** responsible for the model’s predictions.
 
@@ -79,6 +76,17 @@ This project primarily validates **Stage 2** of the ZoomViT paper through two ad
    - The remaining Transformer blocks **recompute global attention exclusively on relevant tokens**.
 
 This is not simple token removal: it forces a **dynamic reorganization of attention**, directly modifying the model’s internal reasoning process.
+
+---
+
+## Experimental Setup
+
+- **Model**: ViT-Tiny (timm implementation)  
+- **Dataset**: Oxford Flowers-102 (224×224 resolution)  
+- **Training**: 5 epochs, cross-entropy loss, Adam optimizer  
+- **Baseline Accuracy**: 9.76% (Top-1)
+
+This baseline serves as the reference point for all pruning and zoom experiments.
 
 ---
 
