@@ -153,6 +153,9 @@ The corresponding accuracy and token-retention curves are available in the `5_pr
 │   ├── flowers_analysis_attention.py
 │   ├── flowers_zoom_image.py
 │   ├── flowers_token_pruning.py
+│   ├── flowers_pruning_plot.py
+│   │
+│   ├── flowers_pruning_analysis.py
 │   │
 │   └── utils.py
 │
