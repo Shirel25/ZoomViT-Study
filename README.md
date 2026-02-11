@@ -41,7 +41,9 @@ This dataset choice was critical to meaningfully analyze visual intent alignment
 
 ### Step 1: Baseline Vision Transformer
 
-A modular Vision Transformer implemented from scratch in **PyTorch**, including:
+A Vision Transformer baseline built upon the **timm** PyTorch implementation, extended with custom hooks and pruning mechanisms.
+
+The architecture includes:
 
 - Patch Embedding and Positional Encodings  
 - 12 Transformer blocks with Multi-Head Self-Attention  
@@ -55,9 +57,9 @@ This baseline serves as the anchor point for all subsequent comparisons.
 
 Instead of reproducing the full Zoomer distillation framework, this project uses **attention-based hooks** as a proxy for visual intent.
 
-By extracting and aggregating attention weights across Transformer layers using forward hooks, we generate **Importance Maps** that highlight **class-decisive regions** responsible for the model’s predictions.
+Attention representations are extracted from the final Transformer block, and patch-level importance scores are computed using the L2 norm of token embeddings.
 
-we generate **Importance Maps** that highlight **class-decisive regions** responsible for the model’s predictions.
+These scores are reshaped into spatial **Importance Maps** highlighting regions that strongly contribute to the model’s internal representations.
 
 This approximation preserves the *intent-guided philosophy* of ZoomViT while remaining computationally tractable.
 
@@ -67,15 +69,15 @@ This approximation preserves the *intent-guided philosophy* of ZoomViT while rem
 
 This project primarily validates **Stage 2** of the ZoomViT paper through two adaptive mechanisms:
 
-1. **Image-Level Zoom (Stage 1 Simulation)**  
+1. **Image-Level Zoom (Stage 1 : Simulation)**  
    Images are dynamically cropped and resized based on the bounding box extracted from importance maps.
 
-2. **Token-Level Pruning (Stage 2 – Architectural Modification)**  
+2. **Token-Level Pruning (Stage 2 : Architectural Modification)**  
    - The token sequence is pruned **after the 6th Transformer block**.
-   - Only the top *X% most important tokens* are retained.
+   - Only the top *X% most important tokens* (tokens with the highest embedding magnitude) are retained.
    - The remaining Transformer blocks **recompute global attention exclusively on relevant tokens**.
 
-This is not simple token removal: it forces a **dynamic reorganization of attention**, directly modifying the model’s internal reasoning process.
+This approach modifies the effective attention computation in later layers without retraining the model.
 
 ---
 
@@ -96,6 +98,8 @@ The experiments reveal three behaviors described in the original paper:
 
 ### Qualitative Behavior Analysis
 
+The following analysis is conducted with a fixed token retention ratio of **0.3**.
+
 - **Good Alignment**  
   When the model correctly identifies the subject, pruning background tokens often *increases confidence* by removing **negative tokens**.
 
@@ -106,6 +110,7 @@ The experiments reveal three behaviors described in the original paper:
   When the model is uncertain, importance maps are scattered. In this case, pruning slightly reduces confidence due to loss of contextual cues.
 
 These results empirically confirm that **pruning is beneficial only when visual intent is correctly aligned**.
+While this analysis focuses on a moderate pruning regime (0.3), a broader multi-ratio evaluation is presented below.
 
 ### Quantitative Token Retention Analysis
 
