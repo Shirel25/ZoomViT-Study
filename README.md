@@ -4,7 +4,7 @@
   <img src="docs/02_Poster.png" width="800">
 </p>
 
--- 
+---
 
 This repository contains a **study and implementation** of the concepts introduced in the paper:
 
