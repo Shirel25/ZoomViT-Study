@@ -16,6 +16,3 @@ __pycache__/
 
 # Ignore unused visualization images
 experiments/flowers/vit_baseline/1_visualizations/autres/
-
-# Temporary ignoring poster
-docs/02_Poster.png
